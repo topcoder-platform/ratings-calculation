@@ -1,5 +1,7 @@
 package com.topcoder.ratings.libs.persistance;
 
+import java.sql.SQLException;
+
 import com.topcoder.ratings.libs.model.RatingData;
 
 /**
@@ -10,5 +12,5 @@ public interface DataPersistor {
      * saves data to the db
      * @param data new rating data
      */
-    void persistData(RatingData[] data);
+    void persistData(RatingData[] data) throws SQLException;
 }

@@ -1,5 +1,7 @@
 package com.topcoder.ratings.libs.process;
 
+import java.sql.SQLException;
+
 import com.topcoder.ratings.libs.algorithm.Algorithm;
 import com.topcoder.ratings.libs.loader.DataLoader;
 import com.topcoder.ratings.libs.persistance.DataPersistor;
@@ -26,7 +28,8 @@ public abstract class RatingProcess {
     
     /**
      * Runs the rating process
+     * @throws SQLException
      */
-    public abstract void runProcess();
+    public abstract void runProcess() throws SQLException;
     
 }
