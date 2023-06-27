@@ -2,6 +2,7 @@ package com.topcoder.ratings.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.topcoder.ratings.database.DBHelper;
 import com.topcoder.ratings.libs.process.MarathonRatingProcess;
 import com.topcoder.ratings.libs.process.RatingProcess;
+import com.topcoder.ratings.services.MarathonLoadService;
+import com.topcoder.ratings.services.RankService;
 
 @RestController
 @RequestMapping(path = "/ratings")
@@ -24,6 +27,8 @@ public class MarathonMatchController {
 
   DBHelper dbHelper;
   Connection conn;
+  Connection oltpConn;
+  Connection dwConn;
 
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
   public ResponseEntity<String> calculateRatings(@RequestBody Map<String, Object> body) throws SQLException {
@@ -33,7 +38,7 @@ public class MarathonMatchController {
       logger.debug("Starting calculation for round " + roundId);
 
       dbHelper = new DBHelper();
-      conn = dbHelper.getConnection();
+      conn = dbHelper.getConnection("OLTP");
       RatingProcess ratingProcess = getMarathonRatingProcess(roundId, conn);
 
       ratingProcess.runProcess();
@@ -49,6 +54,90 @@ public class MarathonMatchController {
 
     } finally {
       dbHelper.closeConnection(conn);
+    }
+  }
+
+  @PostMapping(path = "/mm/loadToDW", produces = "application/json")
+  public ResponseEntity<String> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
+    int roundId = Integer.parseInt(body.get("roundId").toString());
+
+    final int MARATHON_RATING_TYPE_ID = 3;
+    final int OVERALL_RATING_RANK_TYPE_ID = 1;
+    final int ACTIVE_RATING_RANK_TYPE_ID = 2;
+
+    try {
+      logger.debug("Starting ratings transfer for round " + roundId);
+
+      MarathonLoadService mmLoadService = new MarathonLoadService();
+      RankService rankService = new RankService();
+
+      java.sql.Timestamp fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
+
+      dbHelper = new DBHelper();
+      oltpConn = dbHelper.getConnection("OLTP");
+      dwConn = dbHelper.getConnection("DW");
+
+      mmLoadService.getLastUpdateTime(dwConn);
+      mmLoadService.clearRound(dwConn, roundId);
+      mmLoadService.loadContest(oltpConn, dwConn, roundId);
+      mmLoadService.loadRound(oltpConn, dwConn, roundId);
+      mmLoadService.loadProblem(oltpConn, dwConn, roundId);
+      mmLoadService.loadProblemCategory(oltpConn, dwConn, roundId);
+      mmLoadService.loadProblemSubmission(oltpConn, dwConn, roundId);
+      mmLoadService.loadSystemTestCase(oltpConn, dwConn, roundId);
+      mmLoadService.loadSystemTestResult(oltpConn, dwConn, roundId);
+      mmLoadService.loadResult(oltpConn, dwConn, roundId);
+
+      // only load the following if the round is a rated round
+      if (mmLoadService.isRated(oltpConn, roundId)) {
+        mmLoadService.loadRating(oltpConn, dwConn, roundId);
+
+        // Load algo_rating_history
+        mmLoadService.clearHistory(dwConn, roundId);
+
+        Integer prevRoundId = mmLoadService.getPreviousRound(dwConn, roundId);
+        if (prevRoundId != null) {
+          mmLoadService.copyHistory(dwConn, prevRoundId, roundId);
+        }
+        mmLoadService.loadHistory(dwConn, roundId);
+
+        // Load ranks, history has to come first because the rank loads depend on it.
+        List l = rankService.getRatingsForRound(dwConn, roundId, MARATHON_RATING_TYPE_ID);
+
+        rankService.loadRatingRank(dwConn, roundId, OVERALL_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+        rankService.loadRatingRank(dwConn, roundId, ACTIVE_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+
+        rankService.loadRatingRankHistory(dwConn, roundId, OVERALL_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+        rankService.loadRatingRankHistory(dwConn, roundId, ACTIVE_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+
+        rankService.loadCountryRatingRank(dwConn, roundId, OVERALL_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+        rankService.loadCountryRatingRank(dwConn, roundId, ACTIVE_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+
+        rankService.loadStateRatingRank(dwConn, roundId, OVERALL_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+        rankService.loadStateRatingRank(dwConn, roundId, ACTIVE_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+
+        rankService.loadSchoolRatingRank(dwConn, roundId, OVERALL_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+        rankService.loadSchoolRatingRank(dwConn, roundId, ACTIVE_RATING_RANK_TYPE_ID, MARATHON_RATING_TYPE_ID, l);
+
+        mmLoadService.loadStreaks(dwConn);
+      } else {
+        logger.info("*** round is not rated, skipping rating related loads");
+      }
+
+      mmLoadService.setLastUpdateTime(dwConn, fStartTime);
+
+      return new ResponseEntity<String>("Calculation Process Finished for round " + roundId, null, HttpStatus.OK);
+
+    } catch (Exception e) {
+      logger.error("Failed to run the Marathon Ratings for round " + roundId);
+      logger.error(e.getMessage());
+      logger.error("", e);
+      return new ResponseEntity<String>("Calculation Process Failed for round " + roundId, null,
+          HttpStatus.BAD_REQUEST);
+
+    } finally {
+      dbHelper.closeConnection(dwConn);
+      dbHelper.closeConnection(dwConn);
     }
   }
 

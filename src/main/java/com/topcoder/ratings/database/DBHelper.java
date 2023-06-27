@@ -5,8 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
@@ -21,10 +25,11 @@ public class DBHelper extends JdbcTemplate {
   public DBHelper() {
   }
 
-  public Connection getConnection() throws CannotGetJdbcConnectionException {
+  public Connection getConnection(String dbFlag) throws CannotGetJdbcConnectionException {
     try {
       logger.debug("getting DB connection");
-      Connection con = getDataSource().getConnection();
+      DataSource dataSource = dbFlag == "OLTP" ? dataSourceOLTP() : dataSourceDW();
+      Connection con = dataSource.getConnection();
       if (con == null) {
         throw new IllegalStateException("DataSource returned null from getConnection(): " + getDataSource());
       }
@@ -76,5 +81,15 @@ public class DBHelper extends JdbcTemplate {
         throw new SQLException("Unexpected exception on closing JDBC ResultSet", ex);
       }
     }
+  }
+
+  @ConfigurationProperties(prefix = "spring.datasource")
+  public DataSource dataSourceOLTP() {
+    return DataSourceBuilder.create().build();
+  }
+
+  @ConfigurationProperties(prefix = "spring.datasource-dw")
+  public DataSource dataSourceDW() {
+    return DataSourceBuilder.create().build();
   }
 }
