@@ -1,4 +1,4 @@
-package com.topcoder.ratings.services;
+package com.topcoder.ratings.services.marathonmatch;
 
 abstract class AlgoStreak {
   public static final int MARATHON_RATING_INCREASE = 8;

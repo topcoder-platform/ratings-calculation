@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.topcoder.ratings.database.DBHelper;
 import com.topcoder.ratings.libs.process.MarathonRatingProcess;
 import com.topcoder.ratings.libs.process.RatingProcess;
-import com.topcoder.ratings.services.MarathonLoadService;
-import com.topcoder.ratings.services.RankService;
+import com.topcoder.ratings.services.marathonmatch.MarathonLoadService;
+import com.topcoder.ratings.services.marathonmatch.RankService;
 
 @RestController
 @RequestMapping(path = "/ratings")

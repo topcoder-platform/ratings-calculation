@@ -1,4 +1,4 @@
-package com.topcoder.ratings.services;
+package com.topcoder.ratings.services.marathonmatch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

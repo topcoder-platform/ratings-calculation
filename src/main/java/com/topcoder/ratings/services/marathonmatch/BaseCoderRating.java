@@ -1,4 +1,4 @@
-package com.topcoder.ratings.services;
+package com.topcoder.ratings.services.marathonmatch;
 
 public class BaseCoderRating implements Comparable {
   private int _coderId = 0;
