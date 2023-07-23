@@ -25,10 +25,12 @@ public class DBHelper extends JdbcTemplate {
   public DBHelper() {
   }
 
+  DBConfig dbConfig = new DBConfig();
+
   public Connection getConnection(String dbFlag) throws CannotGetJdbcConnectionException {
     try {
       logger.debug("getting DB connection");
-      DataSource dataSource = dbFlag == "OLTP" ? dataSourceOLTP() : dataSourceDW();
+      DataSource dataSource = dbFlag == "OLTP" ? dbConfig.dataSourceOLTP() : dbConfig.dataSourceDW();
       Connection con = dataSource.getConnection();
       if (con == null) {
         throw new IllegalStateException("DataSource returned null from getConnection(): " + getDataSource());
@@ -83,7 +85,7 @@ public class DBHelper extends JdbcTemplate {
     }
   }
 
-  @ConfigurationProperties(prefix = "spring.datasource")
+  @ConfigurationProperties(prefix = "spring.datasource", ignoreInvalidFields = true, ignoreUnknownFields = false)
   public DataSource dataSourceOLTP() {
     return DataSourceBuilder.create().build();
   }
