@@ -48,6 +48,11 @@
 			<version>1.18.26</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.12.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -62,16 +67,6 @@
 				<version>3.8.0</version>
 			</plugin>
 		</plugins>
-
-		<resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <targetPath>${project.build.outputDirectory}</targetPath>
-                <includes>
-                    <include>application.properties</include>
-                </includes>
-            </resource>
-        </resources>
 	</build>
 
 </project>

@@ -2,11 +2,13 @@ package com.topcoder.ratings.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.topcoder.ratings.database.DBConfig;
 import com.topcoder.ratings.database.DBHelper;
 import com.topcoder.ratings.libs.process.MarathonRatingProcess;
 import com.topcoder.ratings.libs.process.RatingProcess;
@@ -25,45 +28,51 @@ import com.topcoder.ratings.services.marathonmatch.RankService;
 public class MarathonMatchController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+  @Autowired
   DBHelper dbHelper;
+  
   Connection conn;
   Connection oltpConn;
   Connection dwConn;
 
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public ResponseEntity<String> calculateRatings(@RequestBody Map<String, Object> body) throws SQLException {
+  public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws SQLException {
     int roundId = Integer.parseInt(body.get("roundId").toString());
+    Map<String, String> responseData = new HashMap<>();
 
     try {
       logger.debug("Starting calculation for round " + roundId);
 
-      dbHelper = new DBHelper();
       conn = dbHelper.getConnection("OLTP");
       RatingProcess ratingProcess = getMarathonRatingProcess(roundId, conn);
 
       ratingProcess.runProcess();
-
-      return new ResponseEntity<String>("Calculation Process Finished for round " + roundId, null, HttpStatus.OK);
+      
+      responseData.put("message", "Calculation Process Finished for round " + roundId);
+      responseData.put("status", "success");
+      return new ResponseEntity<>(responseData, null, HttpStatus.OK);
 
     } catch (SQLException e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
       logger.error(e.getMessage());
       logger.error("", e);
-      return new ResponseEntity<String>("Calculation Process Failed for round " + roundId, null,
-          HttpStatus.BAD_REQUEST);
-
+      responseData.put("message", "Calculation Process Finished for round " + roundId);
+      responseData.put("status", "failure");
+      return new ResponseEntity<>(responseData, null, HttpStatus.BAD_REQUEST);
     } finally {
       dbHelper.closeConnection(conn);
     }
   }
 
   @PostMapping(path = "/mm/loadToDW", produces = "application/json")
-  public ResponseEntity<String> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
+  public ResponseEntity<Object> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     final int MARATHON_RATING_TYPE_ID = 3;
     final int OVERALL_RATING_RANK_TYPE_ID = 1;
     final int ACTIVE_RATING_RANK_TYPE_ID = 2;
+
+    Map<String, String> responseData = new HashMap<>();
 
     try {
       logger.debug("Starting ratings transfer for round " + roundId);
@@ -73,7 +82,6 @@ public class MarathonMatchController {
 
       java.sql.Timestamp fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
 
-      dbHelper = new DBHelper();
       oltpConn = dbHelper.getConnection("OLTP");
       dwConn = dbHelper.getConnection("DW");
 
@@ -126,15 +134,18 @@ public class MarathonMatchController {
 
       mmLoadService.setLastUpdateTime(dwConn, fStartTime);
 
-      return new ResponseEntity<String>("Calculation Process Finished for round " + roundId, null, HttpStatus.OK);
-
+       
+      responseData.put("message", "Ratings load finished for round " + roundId);
+      responseData.put("status", "success");
+      return new ResponseEntity<>(responseData, null, HttpStatus.OK);
     } catch (Exception e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
       logger.error(e.getMessage());
       logger.error("", e);
-      return new ResponseEntity<String>("Calculation Process Failed for round " + roundId, null,
-          HttpStatus.BAD_REQUEST);
 
+      responseData.put("message", "Ratings load failed for round " + roundId);
+      responseData.put("status", "failure");
+      return new ResponseEntity<>(responseData, null, HttpStatus.BAD_REQUEST);
     } finally {
       dbHelper.closeConnection(dwConn);
       dbHelper.closeConnection(dwConn);

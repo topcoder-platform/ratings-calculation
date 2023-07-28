@@ -1,12 +1,11 @@
 package com.topcoder.ratings.controller;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +21,9 @@ import com.topcoder.ratings.services.coders.CoderService;
 public class CoderController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+  @Autowired
   DBHelper dbHelper;
+  
   Connection oltpConn;
   Connection dwConn;
 
@@ -34,8 +35,6 @@ public class CoderController {
     fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
 
     CoderService coderService = new CoderService();
-
-    dbHelper = new DBHelper();
 
     try {
       oltpConn = dbHelper.getConnection("OLTP");

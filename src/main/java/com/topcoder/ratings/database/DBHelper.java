@@ -9,33 +9,34 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
 
 /**
  * A class for Database connection
  *
  */
-public class DBHelper extends JdbcTemplate {
+@Service
+public class DBHelper {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   public DBHelper() {
   }
-
-  DBConfig dbConfig = new DBConfig();
+  
+  @Autowired
+  private DBConfig ds1;
 
   public Connection getConnection(String dbFlag) throws CannotGetJdbcConnectionException {
     try {
       logger.debug("getting DB connection");
-      DataSource dataSource = dbFlag == "OLTP" ? dbConfig.dataSourceOLTP() : dbConfig.dataSourceDW();
+      DataSource dataSource = dbFlag == "OLTP" ? ds1.dataSourceOLTP() : ds1.dataSourceDW();
       Connection con = dataSource.getConnection();
       if (con == null) {
-        throw new IllegalStateException("DataSource returned null from getConnection(): " + getDataSource());
+        throw new IllegalStateException("DataSource returned null from getConnection()");
       }
-      con.setAutoCommit(false);
+      con.setAutoCommit(true);
       return con;
     } catch (SQLException ex) {
       logger.error("error while getting the JDBC connection", ex);
@@ -83,15 +84,5 @@ public class DBHelper extends JdbcTemplate {
         throw new SQLException("Unexpected exception on closing JDBC ResultSet", ex);
       }
     }
-  }
-
-  @ConfigurationProperties(prefix = "spring.datasource", ignoreInvalidFields = true, ignoreUnknownFields = false)
-  public DataSource dataSourceOLTP() {
-    return DataSourceBuilder.create().build();
-  }
-
-  @ConfigurationProperties(prefix = "spring.datasource-dw")
-  public DataSource dataSourceDW() {
-    return DataSourceBuilder.create().build();
   }
 }
