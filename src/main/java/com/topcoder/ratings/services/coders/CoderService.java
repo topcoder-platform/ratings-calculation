@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.topcoder.ratings.database.DBHelper;
 import com.topcoder.ratings.services.marathonmatch.MarathonLoadService;
-
-import java.util.HashSet;
 
 public class CoderService {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
