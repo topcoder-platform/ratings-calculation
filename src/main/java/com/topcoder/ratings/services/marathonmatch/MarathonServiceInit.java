@@ -6,21 +6,20 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.topcoder.ratings.database.DBHelper;
+import com.topcoder.ratings.libs.EventHelper;
 import com.topcoder.ratings.libs.process.MarathonRatingProcess;
 import com.topcoder.ratings.libs.process.RatingProcess;
 
+@Service
 @EnableAsync
 public class MarathonServiceInit {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-  @Autowired
-  DBHelper dbHelper;
   
   Connection conn;
   Connection oltpConn;
@@ -28,16 +27,19 @@ public class MarathonServiceInit {
 
   @Async
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public void calculateRatings(int roundId) throws SQLException {
+  public void calculateRatings(int roundId, DBHelper dbHelper) throws Exception {
     try {
       logger.info(" === start rating calculate for round " + roundId + " ===");
 
-      conn = dbHelper.getConnection("OLTP");
-      RatingProcess ratingProcess = getMarathonRatingProcess(roundId, conn);
-
+      oltpConn = dbHelper.getConnection("OLTP");
+      
+      RatingProcess ratingProcess = getMarathonRatingProcess(roundId, oltpConn);
       ratingProcess.runProcess();
 
       logger.info(" === end rating calculate for round " + roundId + " ===");
+
+      logger.info(" === sending message for round: " + roundId + " ===");
+      EventHelper.fireEvent(roundId, "RATINGS CALCULATION", "COMPLETE");
       
     } catch (SQLException e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
@@ -50,7 +52,7 @@ public class MarathonServiceInit {
 
 
   @Async
-  public void loadRatingsToDW(int roundId) throws SQLException {
+  public void loadRatingsToDW(int roundId, DBHelper dbHelper) throws SQLException {
     final int MARATHON_RATING_TYPE_ID = 3;
     final int OVERALL_RATING_RANK_TYPE_ID = 1;
     final int ACTIVE_RATING_RANK_TYPE_ID = 2;
@@ -118,7 +120,8 @@ public class MarathonServiceInit {
       mmLoadService.setLastUpdateTime(dwConn, fStartTime);
       logger.info(" === end load ratings to DW for round " + roundId + " ===");
 
-      // TODO: call BUS API
+      logger.info(" === sending message for round: " + roundId + " ===");
+      EventHelper.fireEvent(roundId, "RATINGS LOAD TO DW", "COMPLETE");
     } catch (Exception e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
       logger.error(e.getMessage());

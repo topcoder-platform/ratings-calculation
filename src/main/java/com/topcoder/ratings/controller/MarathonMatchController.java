@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.topcoder.ratings.database.DBHelper;
+import com.topcoder.ratings.libs.EventHelper;
 import com.topcoder.ratings.services.marathonmatch.MarathonServiceInit;
 
 @RestController
@@ -20,15 +23,21 @@ import com.topcoder.ratings.services.marathonmatch.MarathonServiceInit;
 public class MarathonMatchController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+  @Autowired
+  DBHelper dbHelper;
+
+  @Autowired
+  private MarathonServiceInit marathonServiceInit;
+
+
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws SQLException {
+  public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws Exception {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     Map<String, String> responseData = new HashMap<>();
 
     logger.info("Starting calculation for round " + roundId);
-    MarathonServiceInit mmService = new MarathonServiceInit();
-    mmService.calculateRatings(roundId);
+    marathonServiceInit.calculateRatings(roundId, dbHelper);
 
     responseData.put("message", "initiated the calculation of ratings for round " + roundId);
     responseData.put("status", "success");
@@ -42,8 +51,7 @@ public class MarathonMatchController {
     Map<String, String> responseData = new HashMap<>();
 
     logger.info("Ratings load process started for round " + roundId);
-    MarathonServiceInit mmService = new MarathonServiceInit();
-    mmService.loadRatingsToDW(roundId);
+    marathonServiceInit.loadRatingsToDW(roundId, dbHelper);
 
     responseData.put("message", "initiated the loading of ratings to DW for round " + roundId);
     responseData.put("status", "success");

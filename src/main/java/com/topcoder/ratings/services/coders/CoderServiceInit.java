@@ -4,18 +4,17 @@ import java.sql.Connection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
 
 import com.topcoder.ratings.database.DBHelper;
+import com.topcoder.ratings.libs.EventHelper;
 
+@Service
 @EnableAsync
 public class CoderServiceInit {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
-  
-  @Autowired
-  DBHelper dbHelper;
   
   Connection oltpConn;
   Connection dwConn;
@@ -23,7 +22,7 @@ public class CoderServiceInit {
   java.sql.Timestamp fStartTime = null;
 
   @Async
-  public void loadCoders() throws Exception {
+  public void loadCoders(DBHelper dbHelper) throws Exception {
 
     fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
 
@@ -59,6 +58,9 @@ public class CoderServiceInit {
       coderService.setLastUpdateTime(fStartTime, dwConn);
 
       logger.info(" === end load coders ===");
+
+      logger.info(" === sending message ===");
+      EventHelper.fireEvent(0, "LOAD CODERS TO DW", "COMPLETE");
 
     } catch (Exception e) {
       logger.error("failed to load coders");

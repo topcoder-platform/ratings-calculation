@@ -23,6 +23,9 @@ public class CoderController {
 
   @Autowired
   DBHelper dbHelper;
+
+  @Autowired
+  private CoderServiceInit coderServiceInit;
   
   Connection oltpConn;
   Connection dwConn;
@@ -34,8 +37,7 @@ public class CoderController {
     Map<String, String> responseData = new HashMap<>();
 
     logger.info("=== start: load coders ===");
-    CoderServiceInit coderService = new CoderServiceInit();
-    coderService.loadCoders();
+    coderServiceInit.loadCoders(dbHelper);
 
     responseData.put("message", "initiated the load of coders to DW");
     responseData.put("status", "success");
