@@ -35,7 +35,7 @@ public class MarathonMatchController {
   Connection oltpConn;
   Connection dwConn;
 
-  @PostMapping(path = "/mm/calculcate", produces = "application/json")
+  @PostMapping(path = "/mm/calculate", produces = "application/json")
   public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws SQLException {
     int roundId = Integer.parseInt(body.get("roundId").toString());
     Map<String, String> responseData = new HashMap<>();
