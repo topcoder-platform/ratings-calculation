@@ -17,7 +17,7 @@ import com.topcoder.ratings.database.DBHelper;
 import com.topcoder.ratings.services.coders.CoderService;
 
 @RestController
-@RequestMapping(path = "/coders")
+@RequestMapping(path = "v5/ratings/coders")
 public class CoderController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -29,7 +29,7 @@ public class CoderController {
 
   java.sql.Timestamp fStartTime = null;
 
-  @PostMapping(path = "/load", produces = "application/json")
+  @PostMapping(path = "/loadToDW", produces = "application/json")
   public ResponseEntity<String> loadCoders(@RequestBody Map<String, Object> body) throws Exception {
 
     fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
