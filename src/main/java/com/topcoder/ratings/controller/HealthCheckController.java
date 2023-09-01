@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("v5/ratings")
 public class HealthCheckController {
 
 	@Operation(tags = "Health-API", description = "Get application health status", operationId = "checkHealth")

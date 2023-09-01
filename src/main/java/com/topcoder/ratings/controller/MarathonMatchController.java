@@ -24,7 +24,7 @@ import com.topcoder.ratings.services.marathonmatch.MarathonLoadService;
 import com.topcoder.ratings.services.marathonmatch.RankService;
 
 @RestController
-@RequestMapping(path = "/ratings")
+@RequestMapping(path = "v5/ratings")
 public class MarathonMatchController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
