@@ -12,7 +12,7 @@
 	
 	<groupId>com.topcoder.ratings</groupId>
 	<artifactId>ratings-calculation</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	
 	<name>ratings-calculator</name>
 	<description>ratings calculator</description>

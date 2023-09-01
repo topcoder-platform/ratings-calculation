@@ -12,7 +12,7 @@ COPY pom.xml .
 RUN mvn clean install -DskipTests
 
 # Copy the JAR file
-RUN cp ./target/ratings-calculation-service*.jar ./app.jar
+RUN cp ./target/ratings-calculation*.jar ./app.jar
 
 # Entrypoint
 ENTRYPOINT ["java", "-Dspring.profiles.active=@env@", "-jar", "./app.jar"]
