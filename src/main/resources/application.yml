@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    jdbcUrl: ${OLTP_JDBC_URL:jdbc:informix-sqli://host.docker.internal:2020/informixoltp:INFORMIXSERVER=informixoltp_tcp}
+    username: ${OLTP_DB_USERNAME:informix}
+    password: ${OLTP_DB_PASSWORD:Inf0rm!x}
+  
+  datasource-dw:
+    jdbcUrl: ${DW_JDBC_URL:jdbc:informix-sqli://host.docker.internal:2021/informixoltp:INFORMIXSERVER=informixoltp_tcp}
+    username: ${DW_DB_USERNAME:informix}
+    password: ${DW_DB_PASSWORD:Inf0rm!x}
+    
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.topcoder-dev.com/    
+          clientId: ${CLIENT_ID:cleint_id}
+          clientSecret: ${CLIENT_SECRET:client_secret}
+          audience: https://m2m.topcoder-dev.com/
+          auth0Url: https://topcoder-dev.auth0.com/oauth/token
+          auth0ProxyServerUrl: https://auth0proxy.topcoder-dev.com/token
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG   
+
+ratings:
+  busApi: https://api.topcoder-dev.com/v5/bus/events
+  eventTopic: notificaiton.rating.calculation
+  
+  authority-prefix: ROLE_
+  
+  # # add allowed roles to this list with the resume ${resume.authority-prefix}
+  allowed-role: 
+    - ${resume.authority-prefix}administrator
+  
+  # valid issuers list for the token validation
+  valid-issuers:
+    - https://auth.topcoder-dev.com/
+    - https://topcoder-dev.auth0.com/
+  
+  # map of issuer specific token properties to validate 
+  token-properties-to-validate:
+    "[https://auth.topcoder-dev.com/]":
+      "[https://topcoder-dev.com/roles]":  "administrator"
+    "[https://topcoder-dev.auth0.com/]":
+      "scope": "all:submission"
+      
+  # # issuer specific authority claim name    
+  authority-claim-name:
+    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/roles
+    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/roles
+     
+  # # issuer specific principal claim name   
+  principal-claim-name:
+    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/userId
+    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/userId    

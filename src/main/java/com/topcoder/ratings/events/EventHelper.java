@@ -1,6 +1,5 @@
-package com.topcoder.ratings.libs;
+package com.topcoder.ratings.events;
 
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
@@ -18,42 +17,41 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Service
 public class EventHelper {
-  private static final Logger logger = LoggerFactory.getLogger(EventHelper.class);
+  private final Logger logger = LoggerFactory.getLogger(EventHelper.class);
 
-  private static String token;
-  private static Properties properties;
+  private String token;
 
-  private static void loadProperties() throws Exception {
-      properties = new Properties();
-      try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
-        properties.load(is);
-      }
-  }
+  @Autowired
+  private EventConfig eventConfig;
 
-  public static String generateAuthToken() throws Exception {
+  public String generateAuthToken() throws Exception {
     if (token == null) {
       logger.info("=== fetching new token ===");
       
-      loadProperties();
+      Map<String, String> eventConfigs = eventConfig.getEventConfigs();
 
       CloseableHttpClient httpClient = HttpClients.createDefault();
-      HttpPost postRequest = new HttpPost(properties.getProperty("auth0ProxyServerUrl"));
+
+      HttpPost postRequest = new HttpPost(eventConfigs.get("auth0ProxyServerUrl"));
 
       postRequest.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
       // Generate the request body to get the token
       Map<String, String> reqBodyMap = new HashMap<String, String>();
-      reqBodyMap.put("client_id", properties.getProperty("clientId"));
-      reqBodyMap.put("client_secret", properties.getProperty("clientSecret"));
+      reqBodyMap.put("client_id", eventConfigs.get("clientId"));
+      reqBodyMap.put("client_secret", eventConfigs.get("clientSecret"));
       reqBodyMap.put("grant_type", "client_credentials");
-      reqBodyMap.put("audience",  properties.getProperty("audience"));
-      reqBodyMap.put("auth0_url",  properties.getProperty("auth0Url"));
+      reqBodyMap.put("audience",  eventConfigs.get("audience"));
+      reqBodyMap.put("auth0_url",  eventConfigs.get("auth0Url"));
 
       // convert the request body to jsonString
       ObjectMapper objectMapper = new ObjectMapper();
@@ -61,6 +59,7 @@ public class EventHelper {
 
       postRequest.setEntity(new StringEntity(reqBodyJson));
       CloseableHttpResponse response = httpClient.execute(postRequest);
+
       String result = EntityUtils.toString(response.getEntity());
 
       // generate JSON object out of response string
@@ -82,11 +81,13 @@ public class EventHelper {
     return token;
   }
 
-  public static void fireEvent(int roundId, String event, String status) throws Exception {
+  public void fireEvent(int roundId, String event, String status) throws Exception {
     String token = generateAuthToken();
+
+    Map<String, String> eventConfigs = eventConfig.getEventConfigs();
     
     CloseableHttpClient httpClient = HttpClients.createDefault();
-    HttpPost postRequest = new HttpPost(properties.getProperty("busApi"));
+    HttpPost postRequest = new HttpPost(eventConfigs.get("busApi"));
 
     postRequest.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
     postRequest.addHeader(HttpHeaders.ACCEPT, "application/json");
@@ -105,7 +106,7 @@ public class EventHelper {
 
     // Generate the request body to get the token
     Map<String, Object> reqBodyMap = new HashMap<String, Object>();
-    reqBodyMap.put("topic", properties.getProperty("eventTopic"));
+    reqBodyMap.put("topic", eventConfigs.get("eventTopic"));
     reqBodyMap.put("timestamp", instant.toString());
     reqBodyMap.put("originator", "rating.calculation.service");
     reqBodyMap.put("mime-type",  "application/json");

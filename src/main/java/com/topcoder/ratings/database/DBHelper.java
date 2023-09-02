@@ -22,16 +22,13 @@ import org.springframework.stereotype.Service;
 public class DBHelper {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  public DBHelper() {
-  }
-  
   @Autowired
-  private DBConfig ds1;
+  private DBConfig dataCfg;
 
   public Connection getConnection(String dbFlag) throws CannotGetJdbcConnectionException {
     try {
       logger.debug("getting DB connection");
-      DataSource dataSource = dbFlag == "OLTP" ? ds1.dataSourceOLTP() : ds1.dataSourceDW();
+      DataSource dataSource = dbFlag == "OLTP" ? dataCfg.dataSourceOLTP() : dataCfg.dataSourceDW();
       Connection con = dataSource.getConnection();
       if (con == null) {
         throw new IllegalStateException("DataSource returned null from getConnection()");

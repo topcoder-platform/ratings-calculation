@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.topcoder.ratings.database.DBHelper;
-import com.topcoder.ratings.libs.EventHelper;
 import com.topcoder.ratings.services.marathonmatch.MarathonServiceInit;
 
 @RestController
@@ -29,9 +29,8 @@ public class MarathonMatchController {
   @Autowired
   private MarathonServiceInit marathonServiceInit;
 
-
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws Exception {
+  public ResponseEntity<Object> calculateRatings(Authentication userAuth, @RequestBody Map<String, Object> body) throws Exception {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     Map<String, String> responseData = new HashMap<>();

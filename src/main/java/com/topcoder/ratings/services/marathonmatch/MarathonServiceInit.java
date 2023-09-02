@@ -6,13 +6,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.topcoder.ratings.database.DBHelper;
-import com.topcoder.ratings.libs.EventHelper;
+import com.topcoder.ratings.events.EventHelper;
 import com.topcoder.ratings.libs.process.MarathonRatingProcess;
 import com.topcoder.ratings.libs.process.RatingProcess;
 
@@ -25,21 +26,26 @@ public class MarathonServiceInit {
   Connection oltpConn;
   Connection dwConn;
 
+  @Autowired
+  EventHelper eventHelper;
+
   @Async
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
   public void calculateRatings(int roundId, DBHelper dbHelper) throws Exception {
     try {
-      logger.info(" === start rating calculate for round " + roundId + " ===");
+      logger.info("=== start rating calculate for round " + roundId + " ===");
 
       oltpConn = dbHelper.getConnection("OLTP");
       
       RatingProcess ratingProcess = getMarathonRatingProcess(roundId, oltpConn);
       ratingProcess.runProcess();
 
-      logger.info(" === end rating calculate for round " + roundId + " ===");
+      logger.info("=== end rating calculate for round " + roundId + " ===");
 
-      logger.info(" === sending message for round: " + roundId + " ===");
-      EventHelper.fireEvent(roundId, "RATINGS CALCULATION", "COMPLETE");
+      logger.info("=== sending message for round: " + roundId + " ===");
+      eventHelper.fireEvent(roundId, "RATINGS CALCULATION", "COMPLETE");
+
+      logger.info("=== complete rating calculate for round " + roundId + " ===");
       
     } catch (SQLException e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
@@ -58,7 +64,7 @@ public class MarathonServiceInit {
     final int ACTIVE_RATING_RANK_TYPE_ID = 2;
 
     try {
-      logger.info(" === start load ratings to DW for round " + roundId + " ===");
+      logger.info("=== start load ratings to DW for round " + roundId + " ===");
 
       MarathonLoadService mmLoadService = new MarathonLoadService();
       RankService rankService = new RankService();
@@ -118,10 +124,12 @@ public class MarathonServiceInit {
       }
 
       mmLoadService.setLastUpdateTime(dwConn, fStartTime);
-      logger.info(" === end load ratings to DW for round " + roundId + " ===");
+      logger.info("=== end load ratings to DW for round " + roundId + " ===");
 
-      logger.info(" === sending message for round: " + roundId + " ===");
-      EventHelper.fireEvent(roundId, "RATINGS LOAD TO DW", "COMPLETE");
+      logger.info("=== sending message for round: " + roundId + " ===");
+      eventHelper.fireEvent(roundId, "RATINGS LOAD TO DW", "COMPLETE");
+
+      logger.info("=== complete load ratings to DW for round " + roundId + " ===");
     } catch (Exception e) {
       logger.error("Failed to run the Marathon Ratings for round " + roundId);
       logger.error(e.getMessage());

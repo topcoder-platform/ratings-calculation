@@ -4,12 +4,13 @@ import java.sql.Connection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import com.topcoder.ratings.database.DBHelper;
-import com.topcoder.ratings.libs.EventHelper;
+import com.topcoder.ratings.events.EventHelper;
 
 @Service
 @EnableAsync
@@ -18,6 +19,9 @@ public class CoderServiceInit {
   
   Connection oltpConn;
   Connection dwConn;
+
+  @Autowired
+  EventHelper eventHelper;
 
   java.sql.Timestamp fStartTime = null;
 
@@ -29,7 +33,7 @@ public class CoderServiceInit {
     CoderService coderService = new CoderService();
 
     try {
-      logger.info(" === start load coders ===");
+      logger.info("=== start load coders ===");
 
       oltpConn = dbHelper.getConnection("OLTP");
       dwConn = dbHelper.getConnection("DW");
@@ -57,10 +61,12 @@ public class CoderServiceInit {
       // coderService.loadUserNotifications(dwConn, oltpConn);
       coderService.setLastUpdateTime(fStartTime, dwConn);
 
-      logger.info(" === end load coders ===");
+      logger.info("=== end load coders ===");
 
-      logger.info(" === sending message ===");
-      EventHelper.fireEvent(0, "LOAD CODERS TO DW", "COMPLETE");
+      logger.info("=== sending message ===");
+      eventHelper.fireEvent(0, "LOAD CODERS TO DW", "COMPLETE");
+
+      logger.info("=== complete load coders ===");
 
     } catch (Exception e) {
       logger.error("failed to load coders");

@@ -1,7 +1,6 @@
 package com.topcoder.ratings.database;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
@@ -10,22 +9,22 @@ import javax.sql.DataSource;
 
 @Repository
 public class DBConfig {
-    @Value("${oltp.datasource.jdbcUrl}")
+    @Value("${spring.datasource.jdbcUrl}")
     private String oltp_jdbc_url;
 
-    @Value("${oltp.datasource.username}")
+    @Value("${spring.datasource.username}")
     private String oltp_username;
 
-    @Value("${oltp.datasource.password}")
+    @Value("${spring.datasource.password}")
     private String oltp_password;
 
-    @Value("${dw.datasource.jdbcUrl}")
+    @Value("${spring.datasource-dw.jdbcUrl}")
     private String dw_jdbc_url;
 
-    @Value("${dw.datasource.username}")
+    @Value("${spring.datasource-dw.username}")
     private String dw_username;
 
-    @Value("${dw.datasource.password}")
+    @Value("${spring.datasource-dw.password}")
     private String dw_password;
 
     @Bean(name = "oltp")
@@ -38,7 +37,6 @@ public class DBConfig {
     }
 
     @Bean(name = "dw")
-    @ConfigurationProperties(prefix = "spring.datasource-dw")
     public DataSource dataSourceDW() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url(dw_jdbc_url);
