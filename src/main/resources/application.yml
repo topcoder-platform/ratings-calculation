@@ -24,7 +24,13 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG   
+        security: DEBUG  
+
+springdoc:
+  api-docs:
+    path: /ratings-service-docs
+  swagger-ui:
+    path: /ratings-service-swagger.html
 
 ratings:
   busApi: https://api.topcoder-dev.com/v5/bus/events

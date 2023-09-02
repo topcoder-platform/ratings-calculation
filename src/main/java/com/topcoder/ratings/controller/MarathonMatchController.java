@@ -43,7 +43,7 @@ public class MarathonMatchController {
     return new ResponseEntity<>(responseData, null, HttpStatus.OK);
   }
 
-  @PostMapping(path = "/mm/loadToDW", produces = "application/json")
+  @PostMapping(path = "/mm/load", produces = "application/json")
   public ResponseEntity<Object> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
