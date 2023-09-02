@@ -1,6 +1,6 @@
 package com.topcoder.ratings.services.marathonmatch;
 
-public class CoderRating implements Comparable<BaseCoderRating> {
+public class CoderRating implements Comparable<CoderRating> {
   long coderId = 0;
   int rating = 0;
   long schoolId = 0;
@@ -17,7 +17,7 @@ public class CoderRating implements Comparable<BaseCoderRating> {
     this.stateCode = stateCode;
   }
 
-  public int compareTo(BaseCoderRating other) {
+  public int compareTo(CoderRating other) {
     if (other.getRating() > rating)
       return 1;
     else if (other.getRating() < rating)

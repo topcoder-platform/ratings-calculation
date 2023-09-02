@@ -48,6 +48,7 @@ public class MarathonLoadService {
     ResultSet rs = null;
     StringBuffer query = null;
 
+    logger.info("=== start: getLastUpdateTime ===");
     try {
       query = new StringBuffer(100);
       query.append("select timestamp from update_log where log_id = ");
@@ -71,6 +72,7 @@ public class MarathonLoadService {
     PreparedStatement ps = null;
     ArrayList<String> a = null;
 
+    logger.info("=== start: clearRound ===");
     try {
       a = new ArrayList<String>();
 
@@ -109,6 +111,7 @@ public class MarathonLoadService {
     ResultSet rs2 = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadContest ===");
     try {
       query = new StringBuffer(100);
       query.append("SELECT c.contest_id "); // 1
@@ -229,13 +232,15 @@ public class MarathonLoadService {
     ResultSet rsRatings = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadRound ===");
+
     try {
       query = new StringBuffer(100);
       query.append("SELECT r.round_id "); // 1
       query.append("       ,r.contest_id "); // 2
       query.append("       ,r.name "); // 3
       query.append("       ,r.status "); // 4
-      query.append("       ,rs.start_time "); // 5
+      query.append("       ,c.start_date "); // 5     // c.start_date
       query.append("       ,r.round_type_id "); // 6
       query.append("       ,r.invitational "); // 7
       query.append("       ,r.notes "); // 8
@@ -246,10 +251,10 @@ public class MarathonLoadService {
       query.append("       ,r.forum_id "); // 11
       query.append("       ,r.rated_ind "); // 12
       query.append("  FROM round r ");
-      query.append("       ,round_segment rs ");
+      query.append("       ,contest c ");    // change to contest
       query.append(" WHERE r.round_id = ? ");
-      query.append("   AND rs.round_id = r.round_id ");
-      query.append("   AND rs.segment_id = " + CODING_SEGMENT_ID);
+      query.append("   AND c.contest_id = r.contest_id ");
+      // query.append("   AND rs.segment_id = " + CODING_SEGMENT_ID);
       psSel = oltpConn.prepareStatement(query.toString());
 
       query = new StringBuffer(100);
@@ -364,7 +369,7 @@ public class MarathonLoadService {
         dbHelper.closeResultSet(rsRatings);
 
         // Retrieve the calendar_id for the start_time of this round
-        java.sql.Timestamp stamp = rs.getTimestamp("start_time");
+        java.sql.Timestamp stamp = rs.getTimestamp("start_date");
         int calendar_id = lookupCalendarId(stamp, dwConn);
         int time_id = lookupTimeId(stamp, dwConn);
 
@@ -455,6 +460,8 @@ public class MarathonLoadService {
     ResultSet rs = null;
     ResultSet rs2 = null;
     StringBuffer query = null;
+
+    logger.info("=== start: loadProblem ===");
 
     try {
       query = new StringBuffer(100);
@@ -629,6 +636,7 @@ public class MarathonLoadService {
     ResultSet rs = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadProblemCategory ===");
     try {
       query = new StringBuffer(100);
       query.append(" select distinct p.problem_id");
@@ -703,6 +711,7 @@ public class MarathonLoadService {
     ResultSet rs = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadProblemSubmission ===");
     try {
       query = new StringBuffer(100);
       query.append(" SELECT cs.round_id"); // 1
@@ -845,6 +854,7 @@ public class MarathonLoadService {
     ResultSet rs = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadSystemTestCase ===");
     try {
       query = new StringBuffer(100);
       query.append("SELECT stc.test_case_id "); // 1
@@ -934,6 +944,7 @@ public class MarathonLoadService {
     ResultSet rs = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadSystemTestResult ===");
     try {
       query = new StringBuffer(100);
       query.append("SELECT str.coder_id ");
@@ -1060,6 +1071,7 @@ public class MarathonLoadService {
     int round_id = 0;
     int coder_id = 0;
 
+    logger.info("=== start: loadResult ===");
     try {
       query = new StringBuffer(100);
 
@@ -1231,6 +1243,7 @@ public class MarathonLoadService {
     ResultSet rs2 = null;
     StringBuffer query = null;
 
+    logger.info("=== start: loadRating ===");
     try {
       query = new StringBuffer(100);
       query.append(" SELECT 1 FROM round");
@@ -1453,10 +1466,10 @@ public class MarathonLoadService {
       return fRoundStartHT.get(roundId);
 
     query = new StringBuffer(100);
-    query.append("SELECT rs.start_time ");
-    query.append("  FROM round_segment rs ");
-    query.append(" WHERE rs.round_id = ? ");
-    query.append("   AND rs.segment_id = " + CODING_SEGMENT_ID);
+    query.append("SELECT c.start_date ");
+    query.append("  FROM contest c, round r ");
+    query.append(" WHERE r.round_id = ? ");
+    query.append("   AND c.contest_id = r.contest_id");
     PreparedStatement pSel = dbConnection.prepareStatement(query.toString());
 
     pSel.setInt(1, roundId);
