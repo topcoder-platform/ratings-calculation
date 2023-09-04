@@ -1,1 +1,1 @@
-# ratings-calculation
+# ratings-calculation-service
