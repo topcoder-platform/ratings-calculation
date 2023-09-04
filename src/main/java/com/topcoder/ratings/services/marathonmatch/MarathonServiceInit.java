@@ -43,7 +43,7 @@ public class MarathonServiceInit {
       logger.info("=== end rating calculate for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "RATINGS CALCULATION", "COMPLETE");
+      eventHelper.fireEvent(roundId, "RATINGS_CALCULATION", "COMPLETE");
 
       logger.info("=== complete rating calculate for round " + roundId + " ===");
       
@@ -127,7 +127,7 @@ public class MarathonServiceInit {
       logger.info("=== end load ratings to DW for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "RATINGS LOAD TO DW", "COMPLETE");
+      eventHelper.fireEvent(roundId, "LOAD_RATINGS", "COMPLETE");
 
       logger.info("=== complete load ratings to DW for round " + roundId + " ===");
     } catch (Exception e) {
