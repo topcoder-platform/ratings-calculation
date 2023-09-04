@@ -64,7 +64,7 @@ public class CoderServiceInit {
       logger.info("=== end load coders ===");
 
       logger.info("=== sending message ===");
-      eventHelper.fireEvent(0, "LOAD CODERS TO DW", "COMPLETE");
+      eventHelper.fireEvent(0, "LOAD_CODERS", "COMPLETE");
 
       logger.info("=== complete load coders ===");
 

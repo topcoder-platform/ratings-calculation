@@ -52,7 +52,7 @@ ratings:
     "[https://auth.topcoder-dev.com/]":
       "[https://topcoder-dev.com/roles]":  "administrator"
     "[https://topcoder-dev.auth0.com/]":
-      "scope": "all:submission"
+      "scope": "all:ratings"
       
   # # issuer specific authority claim name    
   authority-claim-name:

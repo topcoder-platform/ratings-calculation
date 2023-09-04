@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "fa7e3a1f-62ae-4a73-8e41-2a203c8b2520",
+		"name": "ratings-calculation-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3790435"
+	},
+	"item": [
+		{
+			"name": "Load_Ratings",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{v3Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roundId\": 19628\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BASE_URL}}/v5/ratings/mm/load",
+					"protocol": "https",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v5",
+						"ratings",
+						"mm",
+						"load"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate_Ratings",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{v3Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roundId\": 19578\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BASE_URL}}/v5/ratings/mm/calculcate",
+					"protocol": "https",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v5",
+						"ratings",
+						"mm",
+						"calculcate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Load_Coders",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{v3Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BASE_URL}}/v5/coders/load",
+					"protocol": "https",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v5",
+						"coders",
+						"load"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
