@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,11 +35,13 @@ public class CoderController {
   java.sql.Timestamp fStartTime = null;
 
   @PostMapping(path = "/load", produces = "application/json")
-  public ResponseEntity<Object> loadCoders() throws Exception {
+  public ResponseEntity<Object> loadCoders(Authentication userAuth, @RequestBody Map<String, Object> body) throws Exception {
+    int roundId = Integer.parseInt(body.get("roundId").toString());
+
     Map<String, String> responseData = new HashMap<>();
 
     logger.info("=== start: load coders ===");
-    coderServiceInit.loadCoders(dbHelper);
+    coderServiceInit.loadCoders(roundId, dbHelper);
 
     responseData.put("message", "initiated the load of coders to DW");
     responseData.put("status", "success");

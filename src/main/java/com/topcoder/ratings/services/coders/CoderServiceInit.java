@@ -26,7 +26,7 @@ public class CoderServiceInit {
   java.sql.Timestamp fStartTime = null;
 
   @Async
-  public void loadCoders(DBHelper dbHelper) throws Exception {
+  public void loadCoders(int roundId, DBHelper dbHelper) throws Exception {
 
     fStartTime = new java.sql.Timestamp(System.currentTimeMillis());
 
@@ -64,7 +64,7 @@ public class CoderServiceInit {
       logger.info("=== end load coders ===");
 
       logger.info("=== sending message ===");
-      eventHelper.fireEvent(0, "LOAD_CODERS", "COMPLETE");
+      eventHelper.fireEvent(roundId, "LOAD_CODERS", "COMPLETE");
 
       logger.info("=== complete load coders ===");
 
