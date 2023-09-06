@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import com.topcoder.ratings.services.marathonmatch.MarathonServiceInit;
 
 @RestController
 @RequestMapping(path = "v5/ratings")
+@Validated
 public class MarathonMatchController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -29,7 +31,7 @@ public class MarathonMatchController {
   @Autowired
   private MarathonServiceInit marathonServiceInit;
 
-  @PostMapping(path = "/mm/calculcate", produces = "application/json")
+  @PostMapping(path = "/mm/calculate", produces = "application/json")
   public ResponseEntity<Object> calculateRatings(Authentication userAuth, @RequestBody Map<String, Object> body) throws Exception {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 

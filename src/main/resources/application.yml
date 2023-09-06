@@ -36,30 +36,17 @@ ratings:
   busApi: https://api.topcoder-dev.com/v5/bus/events
   eventTopic: notificaiton.rating.calculation
   
-  authority-prefix: ROLE_
+  authority-prefix: AUTHORITY_
   
-  # # add allowed roles to this list with the resume ${resume.authority-prefix}
-  allowed-role: 
-    - ${resume.authority-prefix}administrator
+  allowed-authority: 
+    - ${ratings.authority-prefix}administrator
+    - ${ratings.authority-prefix}all:ratings
   
   # valid issuers list for the token validation
   valid-issuers:
     - https://auth.topcoder-dev.com/
     - https://topcoder-dev.auth0.com/
   
-  # map of issuer specific token properties to validate 
-  token-properties-to-validate:
-    "[https://auth.topcoder-dev.com/]":
-      "[https://topcoder-dev.com/roles]":  "administrator"
-    "[https://topcoder-dev.auth0.com/]":
-      "scope": "all:ratings"
-      
-  # # issuer specific authority claim name    
-  authority-claim-name:
-    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/roles
-    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/roles
-     
-  # # issuer specific principal claim name   
-  principal-claim-name:
-    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/userId
-    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/userId    
+  authority-claims:
+    - scope
+    - https://topcoder-dev.com/roles
