@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +31,7 @@ public class MarathonMatchController {
   private MarathonServiceInit marathonServiceInit;
 
   @PostMapping(path = "/mm/calculate", produces = "application/json")
-  public ResponseEntity<Object> calculateRatings(Authentication userAuth, @RequestBody Map<String, Object> body) throws Exception {
+  public ResponseEntity<Object> calculateRatings(@RequestBody Map<String, Object> body) throws Exception {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     Map<String, String> responseData = new HashMap<>();
@@ -46,7 +45,7 @@ public class MarathonMatchController {
   }
 
   @PostMapping(path = "/mm/load", produces = "application/json")
-  public ResponseEntity<Object> loadRatingsToDW(Authentication userAuth, @RequestBody Map<String, Object> body) throws SQLException {
+  public ResponseEntity<Object> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     Map<String, String> responseData = new HashMap<>();
