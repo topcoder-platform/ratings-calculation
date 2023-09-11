@@ -38,12 +38,12 @@ public class MarathonServiceInit {
       oltpConn = dbHelper.getConnection("OLTP");
       
       RatingProcess ratingProcess = getMarathonRatingProcess(roundId, oltpConn);
-      ratingProcess.runProcess();
+      String status = ratingProcess.runProcess();
 
       logger.info("=== end rating calculate for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "RATINGS_CALCULATION", "COMPLETE");
+      eventHelper.fireEvent(roundId, "RATINGS_CALCULATION", status);
 
       logger.info("=== complete rating calculate for round " + roundId + " ===");
       
@@ -127,7 +127,7 @@ public class MarathonServiceInit {
       logger.info("=== end load ratings to DW for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "LOAD_RATINGS", "COMPLETE");
+      eventHelper.fireEvent(roundId, "LOAD_RATINGS", "SUCCESS");
 
       logger.info("=== complete load ratings to DW for round " + roundId + " ===");
     } catch (Exception e) {

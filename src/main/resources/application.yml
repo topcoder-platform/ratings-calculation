@@ -13,12 +13,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://auth.topcoder-dev.com/    
+          issuer-uri: ${ISSUER_URI:https://auth.topcoder-dev.com/}
           clientId: ${CLIENT_ID:cleint_id}
           clientSecret: ${CLIENT_SECRET:client_secret}
-          audience: https://m2m.topcoder-dev.com/
-          auth0Url: https://topcoder-dev.auth0.com/oauth/token
-          auth0ProxyServerUrl: https://auth0proxy.topcoder-dev.com/token
+          audience: ${AUDIENCE:https://m2m.topcoder-dev.com/}
+          auth0Url: ${AUTH0_URL:https://topcoder-dev.auth0.com/oauth/token}
+          auth0ProxyServerUrl: ${AUTH0_PROXY_URL:https://auth0proxy.topcoder-dev.com/token}
 
 logging:
   level:
@@ -33,7 +33,7 @@ springdoc:
     path: /ratings-service-swagger.html
 
 ratings:
-  busApi: https://api.topcoder-dev.com/v5/bus/events
+  busApi: ${BUS_API:https://api.topcoder-dev.com/v5/bus/events}
   eventTopic: notificaiton.rating.calculation
   
   authority-prefix: AUTHORITY_
@@ -44,9 +44,9 @@ ratings:
   
   # valid issuers list for the token validation
   valid-issuers:
-    - https://auth.topcoder-dev.com/
-    - https://topcoder-dev.auth0.com/
+    - ${USER_TOKEN_ISSUER:https://auth.topcoder-dev.com/}
+    - ${M2M_TOKEN_ISSUER:https://topcoder-dev.auth0.com/}
   
   authority-claims:
     - scope
-    - https://topcoder-dev.com/roles
+    - ${ROLES_CLAIM:https://topcoder-dev.com/roles}
