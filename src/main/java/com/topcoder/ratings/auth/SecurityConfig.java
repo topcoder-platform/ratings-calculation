@@ -137,9 +137,6 @@ public class SecurityConfig {
 
 		RatingsApiJwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new RatingsApiJwtGrantedAuthoritiesConverter();
 
-		System.out.println(this.authorityPrefix);
-		System.out.println(this.authorityClaims);
-		
 		jwtGrantedAuthoritiesConverter.setAuthorityPrefix(this.authorityPrefix);
 		jwtGrantedAuthoritiesConverter.setAuthorityClaims(this.authorityClaims);
 		return jwtGrantedAuthoritiesConverter;

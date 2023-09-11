@@ -30,6 +30,6 @@ public abstract class RatingProcess {
      * Runs the rating process
      * @throws SQLException
      */
-    public abstract void runProcess() throws SQLException;
+    public abstract String runProcess() throws Exception;
     
 }
