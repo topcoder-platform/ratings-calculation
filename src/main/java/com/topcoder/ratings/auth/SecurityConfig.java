@@ -97,6 +97,7 @@ public class SecurityConfig {
 				.requestMatchers(apiDocPath).permitAll()
 				.requestMatchers("/v5/ratings/health").permitAll()
 				.requestMatchers("/v5/ratings/mm/**").hasAnyAuthority(allowedAuthority)
+				.requestMatchers("/v5/ratings/srm/**").hasAnyAuthority(allowedAuthority)
 				.requestMatchers("/v5/ratings/coders/**").hasAnyAuthority(allowedAuthority))
 		.oauth2ResourceServer(oauth2 -> oauth2
 				.authenticationManagerResolver(jwtIssuerAuthenticationManagerResolver())

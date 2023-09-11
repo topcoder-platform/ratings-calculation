@@ -31,7 +31,7 @@ public class MarathonServiceInit {
 
   @Async
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public void calculateRatings(int roundId, DBHelper dbHelper) throws Exception {
+  public void calculateMMRatings(int roundId, DBHelper dbHelper) throws Exception {
     try {
       logger.info("=== start rating calculate for round " + roundId + " ===");
 

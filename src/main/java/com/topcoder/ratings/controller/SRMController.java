@@ -1,6 +1,5 @@
 package com.topcoder.ratings.controller;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,44 +15,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.topcoder.ratings.database.DBHelper;
-import com.topcoder.ratings.services.marathonmatch.MarathonServiceInit;
+import com.topcoder.ratings.services.srm.SRMServiceInit;
 
 @RestController
 @RequestMapping(path = "v5/ratings")
 @Validated
-public class MarathonMatchController {
+public class SRMController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   DBHelper dbHelper;
 
   @Autowired
-  private MarathonServiceInit marathonServiceInit;
+  private SRMServiceInit srmServiceInit;
 
-  @PostMapping(path = "/mm/calculate", produces = "application/json")
-  public ResponseEntity<Object> calculateMMRatings(@RequestBody Map<String, Object> body) throws Exception {
+  @PostMapping(path = "/srm/calculate", produces = "application/json")
+  public ResponseEntity<Object> calculateSRMRatings(@RequestBody Map<String, Object> body) throws Exception {
     int roundId = Integer.parseInt(body.get("roundId").toString());
 
     Map<String, String> responseData = new HashMap<>();
 
     logger.info("Starting calculation for round " + roundId);
-    marathonServiceInit.calculateMMRatings(roundId, dbHelper);
+    srmServiceInit.calculateSRMRatings(roundId, dbHelper);
 
     responseData.put("message", "initiated the calculation of ratings for round " + roundId);
-    responseData.put("status", "success");
-    return new ResponseEntity<>(responseData, null, HttpStatus.OK);
-  }
-
-  @PostMapping(path = "/mm/load", produces = "application/json")
-  public ResponseEntity<Object> loadRatingsToDW(@RequestBody Map<String, Object> body) throws SQLException {
-    int roundId = Integer.parseInt(body.get("roundId").toString());
-
-    Map<String, String> responseData = new HashMap<>();
-
-    logger.info("Ratings load process started for round " + roundId);
-    marathonServiceInit.loadRatingsToDW(roundId, dbHelper);
-
-    responseData.put("message", "initiated the loading of ratings to DW for round " + roundId);
     responseData.put("status", "success");
     return new ResponseEntity<>(responseData, null, HttpStatus.OK);
   }
