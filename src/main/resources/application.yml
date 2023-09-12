@@ -9,17 +9,6 @@ spring:
     username: ${DW_DB_USERNAME:informix}
     password: ${DW_DB_PASSWORD:Inf0rm!x}
     
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${ISSUER_URI:https://auth.topcoder-dev.com/}
-          clientId: ${CLIENT_ID:cleint_id}
-          clientSecret: ${CLIENT_SECRET:client_secret}
-          audience: ${AUDIENCE:https://m2m.topcoder-dev.com/}
-          auth0Url: ${AUTH0_URL:https://topcoder-dev.auth0.com/oauth/token}
-          auth0ProxyServerUrl: ${AUTH0_PROXY_URL:https://auth0proxy.topcoder-dev.com/token}
-
 logging:
   level:
     org:
@@ -35,6 +24,11 @@ springdoc:
 ratings:
   busApi: ${BUS_API:https://api.topcoder-dev.com/v5/bus/events}
   eventTopic: notificaiton.rating.calculation
+  clientId: ${CLIENT_ID:client_id}
+  clientSecret: ${CLIENT_SECRET:client_secret}
+  audience: ${AUDIENCE:https://m2m.topcoder-dev.com/}
+  auth0Url: ${AUTH0_URL:https://topcoder-dev.auth0.com/oauth/token}
+  auth0ProxyServerUrl: ${AUTH0_PROXY_URL:https://auth0proxy.topcoder-dev.com/token}
   
   authority-prefix: AUTHORITY_
   

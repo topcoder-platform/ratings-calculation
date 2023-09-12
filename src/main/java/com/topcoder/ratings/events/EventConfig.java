@@ -9,19 +9,19 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class EventConfig {
-  @Value("${spring.security.oauth2.resourceserver.jwt.auth0ProxyServerUrl}")
+  @Value("${ratings.auth0ProxyServerUrl}")
   private  String auth0ProxyServerUrl;
 
-  @Value("${spring.security.oauth2.resourceserver.jwt.clientId}")
+  @Value("${ratings.clientId}")
   private  String clientId;
 
-  @Value("${spring.security.oauth2.resourceserver.jwt.clientSecret}")
+  @Value("${ratings.clientSecret}")
   private  String clientSecret;
 
-  @Value("${spring.security.oauth2.resourceserver.jwt.audience}")
+  @Value("${ratings.audience}")
   private  String audience;
 
-  @Value("${spring.security.oauth2.resourceserver.jwt.auth0Url}")
+  @Value("${ratings.auth0Url}")
   private  String auth0Url;
 
   @Value("${ratings.busApi}")
