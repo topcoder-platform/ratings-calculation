@@ -18,9 +18,10 @@
 	<description>ratings calculator</description>
 	
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>17</java.version>
+		<spring-cloud.version>2022.0.1</spring-cloud.version>
+		<aws-java-sdk.version>1.11.1000</aws-java-sdk.version>
+		<aws-spring-version>3.0.1</aws-spring-version>
 	</properties>
 	
 	<dependencies>

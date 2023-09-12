@@ -44,6 +44,8 @@ public class MarathonDataLoader implements DataLoader {
     "from long_comp_result lcr, OUTER(algo_rating ar) " +
     "where lcr.round_id = ? " +
     "and lcr.attended = 'Y' " +
+    "and lcr.new_rating IS NULL " +
+    "and lcr.new_vol IS NULL " +
     "and ar.coder_id = lcr.coder_id " +
     "and ar.algo_rating_type_id = 3 " +
     "order by lcr.system_point_total desc";

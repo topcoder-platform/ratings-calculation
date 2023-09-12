@@ -31,19 +31,19 @@ public class MarathonServiceInit {
 
   @Async
   @PostMapping(path = "/mm/calculcate", produces = "application/json")
-  public void calculateRatings(int roundId, DBHelper dbHelper) throws Exception {
+  public void calculateMMRatings(int roundId, DBHelper dbHelper) throws Exception {
     try {
       logger.info("=== start rating calculate for round " + roundId + " ===");
 
       oltpConn = dbHelper.getConnection("OLTP");
       
       RatingProcess ratingProcess = getMarathonRatingProcess(roundId, oltpConn);
-      ratingProcess.runProcess();
+      String status = ratingProcess.runProcess();
 
       logger.info("=== end rating calculate for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "RATINGS_CALCULATION", "COMPLETE");
+      eventHelper.fireEvent(roundId, "RATINGS_CALCULATION", status);
 
       logger.info("=== complete rating calculate for round " + roundId + " ===");
       
@@ -127,7 +127,7 @@ public class MarathonServiceInit {
       logger.info("=== end load ratings to DW for round " + roundId + " ===");
 
       logger.info("=== sending message for round: " + roundId + " ===");
-      eventHelper.fireEvent(roundId, "LOAD_RATINGS", "COMPLETE");
+      eventHelper.fireEvent(roundId, "LOAD_RATINGS", "SUCCESS");
 
       logger.info("=== complete load ratings to DW for round " + roundId + " ===");
     } catch (Exception e) {

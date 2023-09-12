@@ -9,17 +9,6 @@ spring:
     username: ${DW_DB_USERNAME:informix}
     password: ${DW_DB_PASSWORD:Inf0rm!x}
     
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://auth.topcoder-dev.com/    
-          clientId: ${CLIENT_ID:cleint_id}
-          clientSecret: ${CLIENT_SECRET:client_secret}
-          audience: https://m2m.topcoder-dev.com/
-          auth0Url: https://topcoder-dev.auth0.com/oauth/token
-          auth0ProxyServerUrl: https://auth0proxy.topcoder-dev.com/token
-
 logging:
   level:
     org:
@@ -33,33 +22,25 @@ springdoc:
     path: /ratings-service-swagger.html
 
 ratings:
-  busApi: https://api.topcoder-dev.com/v5/bus/events
+  busApi: ${BUS_API:https://api.topcoder-dev.com/v5/bus/events}
   eventTopic: notificaiton.rating.calculation
+  clientId: ${CLIENT_ID:client_id}
+  clientSecret: ${CLIENT_SECRET:client_secret}
+  audience: ${AUDIENCE:https://m2m.topcoder-dev.com/}
+  auth0Url: ${AUTH0_URL:https://topcoder-dev.auth0.com/oauth/token}
+  auth0ProxyServerUrl: ${AUTH0_PROXY_URL:https://auth0proxy.topcoder-dev.com/token}
   
-  authority-prefix: ROLE_
+  authority-prefix: AUTHORITY_
   
-  # # add allowed roles to this list with the resume ${resume.authority-prefix}
-  allowed-role: 
-    - ${resume.authority-prefix}administrator
+  allowed-authority: 
+    - ${ratings.authority-prefix}administrator
+    - ${ratings.authority-prefix}all:ratings
   
   # valid issuers list for the token validation
   valid-issuers:
-    - https://auth.topcoder-dev.com/
-    - https://topcoder-dev.auth0.com/
+    - ${USER_TOKEN_ISSUER:https://auth.topcoder-dev.com/}
+    - ${M2M_TOKEN_ISSUER:https://topcoder-dev.auth0.com/}
   
-  # map of issuer specific token properties to validate 
-  token-properties-to-validate:
-    "[https://auth.topcoder-dev.com/]":
-      "[https://topcoder-dev.com/roles]":  "administrator"
-    "[https://topcoder-dev.auth0.com/]":
-      "scope": "all:ratings"
-      
-  # # issuer specific authority claim name    
-  authority-claim-name:
-    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/roles
-    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/roles
-     
-  # # issuer specific principal claim name   
-  principal-claim-name:
-    "[https://topcoder-dev.auth0.com/]": https://topcoder-dev.com/userId
-    "[https://auth.topcoder-dev.com/]": https://topcoder-dev.com/userId    
+  authority-claims:
+    - scope
+    - ${ROLES_CLAIM:https://topcoder-dev.com/roles}
