@@ -3,17 +3,17 @@ spring:
     jdbcUrl: ${OLTP_JDBC_URL:jdbc:informix-sqli://host.docker.internal:2020/informixoltp:INFORMIXSERVER=informixoltp_tcp}
     username: ${OLTP_DB_USERNAME:informix}
     password: ${OLTP_DB_PASSWORD:Inf0rm!x}
-  
+
   datasource-dw:
     jdbcUrl: ${DW_JDBC_URL:jdbc:informix-sqli://host.docker.internal:2021/informixoltp:INFORMIXSERVER=informixoltp_tcp}
     username: ${DW_DB_USERNAME:informix}
     password: ${DW_DB_PASSWORD:Inf0rm!x}
-    
+
 logging:
   level:
     org:
       springframework:
-        security: DEBUG  
+        security: DEBUG
 
 springdoc:
   api-docs:
@@ -23,24 +23,24 @@ springdoc:
 
 ratings:
   busApi: ${BUS_API:https://api.topcoder-dev.com/v5/bus/events}
-  eventTopic: notificaiton.rating.calculation
+  eventTopic: notification.rating.calculation
   clientId: ${CLIENT_ID:client_id}
   clientSecret: ${CLIENT_SECRET:client_secret}
   audience: ${AUDIENCE:https://m2m.topcoder-dev.com/}
   auth0Url: ${AUTH0_URL:https://topcoder-dev.auth0.com/oauth/token}
   auth0ProxyServerUrl: ${AUTH0_PROXY_URL:https://auth0proxy.topcoder-dev.com/token}
-  
+
   authority-prefix: AUTHORITY_
-  
-  allowed-authority: 
+
+  allowed-authority:
     - ${ratings.authority-prefix}administrator
     - ${ratings.authority-prefix}all:ratings
-  
+
   # valid issuers list for the token validation
   valid-issuers:
     - ${USER_TOKEN_ISSUER:https://auth.topcoder-dev.com/}
     - ${M2M_TOKEN_ISSUER:https://topcoder-dev.auth0.com/}
-  
+
   authority-claims:
     - scope
     - ${ROLES_CLAIM:https://topcoder-dev.com/roles}
