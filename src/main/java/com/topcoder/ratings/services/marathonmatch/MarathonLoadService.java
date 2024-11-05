@@ -1071,7 +1071,7 @@ public class MarathonLoadService {
     int round_id = 0;
     int coder_id = 0;
 
-    logger.info("=== start: loadResult ===");
+    logger.info("=== start: loadResult " + roundId + " ===");
     try {
       query = new StringBuffer(100);
 
@@ -1722,7 +1722,6 @@ public class MarathonLoadService {
         psUpd.setInt(3, roundId);
         psUpd.setInt(4, rs.getInt("coder_id"));
         int retVal = psUpd.executeUpdate();
-
         if (retVal == 0) {
           psIns.clearParameters();
           psIns.setInt(1, rs.getInt("coder_id"));
@@ -1731,6 +1730,7 @@ public class MarathonLoadService {
           psIns.setInt(4, rs.getInt("new_vol"));
           psIns.executeUpdate();
         }
+
 
         count++;
         logger.info("... loaded " + count + " rows for ratings inserted ...");
