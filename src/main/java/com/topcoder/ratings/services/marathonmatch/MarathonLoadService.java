@@ -1738,6 +1738,11 @@ public class MarathonLoadService {
 
       logger.info("algo_history_rating inserted from long_comp_result: " + count);
 
+    } catch (Exception e) {
+      logger.error("error in loadHistory");
+      logger.error(e.getMessage());
+      logger.error("", e);
+      throw e;
     } finally {
       dbHelper.closeResultSet(rs);
       dbHelper.closeStatement(psSel);
